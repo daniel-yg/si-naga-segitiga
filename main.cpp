@@ -28,6 +28,21 @@ const char* fragmentShaderSource =
 "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\n";
 
+unsigned int shaderProgram;
+
+//outputs a shader program that has compiled the shaders
+void compileShaders();
+
+// sets up the objects to draw
+// TODO: trim out the unrequired args (potentially such as VBO)
+void setup(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+
+void setupDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+
+void render(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+
+void renderDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+
 int main(void)
 {
 
@@ -52,76 +67,14 @@ int main(void)
     /* Init Glew */
     GLenum err = glewInit();
     
-    /* Create and Compile vertex shader */
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if(!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-    } else 
-    {
-        cout << "Vertex Shader Compilation Successful" << endl;
-    }
     
-    /* Create and compile fragment shader */
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    compileShaders();
 
-    /* Create the program */
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        cout <<"Oh no program doesn't work: \n" << infoLog << endl;
-    }
-
-    /* Clean Up */
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    /* Triangle Creation */
-    float vertices[] = {
-        100.0f, 100.0f, 0.0f,
-        200.0f, 200.0f, 0.0f,
-        100.0f, 200.0f, 0.0f
-    };
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
-    glGenVertexArrays(1, &VAO); 
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
 
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(dragonHeadVertices), dragonHeadVertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonHeadIndices), dragonHeadIndices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
-    glBindVertexArray(0);
-
+    setup(VAO,VBO,EBO);
     
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
@@ -148,4 +101,80 @@ int main(void)
     printf("%s",glGetString(GL_VERSION));
     glfwTerminate();
     return 0;
+}
+
+void compileShaders() {
+     /* Create and Compile vertex shader */
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    int  success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+    if(!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+    } else 
+    {
+        cout << "Vertex Shader Compilation Successful" << endl;
+    }
+    
+    /* Create and compile fragment shader */
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    /* Create the program */
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if(!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        cout <<"Oh no program doesn't work: \n" << infoLog << endl;
+    }
+
+    /* Clean Up */
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+}
+
+void setup(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
+
+    //Initialization
+    glGenVertexArrays(1, &VAO); 
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Set up the objects here
+    // NOTE: most likely need different VAO VBO and EBO for each object. 
+    // Look for it later
+    setupDragonHead(VAO, VBO, EBO);
+
+    // Setting Vertex Attributes
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Unbinding
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+
+    glBindVertexArray(0);
+}
+
+void setupDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dragonHeadVertices), dragonHeadVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonHeadIndices), dragonHeadIndices, GL_STATIC_DRAW);
 }
