@@ -4,22 +4,27 @@
 #include <iostream>
 using namespace std;
 
+const GLsizei SCREEN_WIDTH = 800;
+const GLsizei SCREEN_HEIGHT = 800;
+
+/* This Vertex Shader will convert a (0 -- 800) to (-1.0 -- 1.0) coordinate system */
 const char* vertexShaderSource = 
-"#version 440 core\n\
-layout (location = 0) in vec3 aPos;\n\
-\n\
-void main() {\n\
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n\
-}";
+"#version 440 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"uniform vec2 size;\n"
+"\n"
+"void main() {\n"
+    "gl_Position = vec4((aPos.x-(size.x/2))/(size.x/2), (aPos.y-(size.y/2))/(size.y/2), aPos.z, 1.0);\n"
+"}\n";
 
 const char* fragmentShaderSource = 
-"#version 330 core\n\
-out vec4 FragColor;\n\
-\n\
-void main()\n\
-{\n\
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n\
-}";
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n";
 
 int main(void)
 {
@@ -89,9 +94,9 @@ int main(void)
 
     /* Triangle Creation */
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
+        100.0f, 100.0f, 0.0f,
+        200.0f, 200.0f, 0.0f,
+        100.0f, 200.0f, 0.0f
     };
     unsigned int VAO;
     unsigned int VBO;
@@ -107,16 +112,20 @@ int main(void)
 
     glBindVertexArray(0);
 
-    /* Use Program */ 
     
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    /* Pass screen size to shader */
+    GLint screenSizeAddr = glGetUniformLocation(shaderProgram, "size");
+    glUniform2f(screenSizeAddr, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+       
         glDrawArrays(GL_TRIANGLES,0,3);
 
         /* Swap front and back buffers */
