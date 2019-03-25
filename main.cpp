@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Dragon.hpp"
 
 #include <iostream>
 using namespace std;
@@ -8,13 +9,14 @@ const GLsizei SCREEN_WIDTH = 800;
 const GLsizei SCREEN_HEIGHT = 800;
 
 /* This Vertex Shader will convert a (0 -- 800) to (-1.0 -- 1.0) coordinate system */
+/* (0,0) located on top left, standardized with paint coordinates */
 const char* vertexShaderSource = 
 "#version 440 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "uniform vec2 size;\n"
 "\n"
 "void main() {\n"
-    "gl_Position = vec4((aPos.x-(size.x/2))/(size.x/2), (aPos.y-(size.y/2))/(size.y/2), aPos.z, 1.0);\n"
+    "gl_Position = vec4((aPos.x-(size.x/2))/(size.x/2), (-aPos.y+(size.y/2))/(size.y/2), aPos.z, 1.0);\n"
 "}\n";
 
 const char* fragmentShaderSource = 
@@ -100,15 +102,23 @@ int main(void)
     };
     unsigned int VAO;
     unsigned int VBO;
+    unsigned int EBO;
     glGenVertexArrays(1, &VAO); 
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dragonHeadVertices), dragonHeadVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonHeadIndices), dragonHeadIndices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
     glBindVertexArray(0);
 
@@ -126,7 +136,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
        
-        glDrawArrays(GL_TRIANGLES,0,3);
+        glDrawElements(GL_TRIANGLES,9,GL_UNSIGNED_INT,0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
