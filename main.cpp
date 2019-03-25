@@ -136,7 +136,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
        
-        glDrawElements(GL_TRIANGLES,9,GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES,sizeof(dragonHeadIndices)/sizeof(int),GL_UNSIGNED_INT,0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
