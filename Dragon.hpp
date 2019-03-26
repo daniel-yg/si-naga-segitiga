@@ -1,6 +1,11 @@
 #ifndef DRAGON_HPP
 #define DRAGON_HPP
 
+#define DRAGON_HEAD 0
+#define DRAGON_BODY 1
+#define DRAGON_WINGS 2
+#define DRAGON_LEGS 3
+
 /* Vertice Dict */
 // 0 1 2 = tanduk
 // 1 3 4 = kepala
@@ -28,21 +33,33 @@ float dragonHeadVertices[] = {
     472.0f, 446.0f, 0.0f, // 12 belakang 3 (bawah, tapi ujungnya)
     496.0f, 441.0f, 0.0f, // 13 belakang 3 (bawah, bagian yang melekat ke leher)
 
-
-    
 }; // Vertices
 
+
 unsigned int dragonHeadIndices[] = {
-    0, 1, 2,
-    1, 3, 4,
-    2, 4, 5,
-    4, 5, 6,
-    1, 4, 7,
+    0, 1, 2, 
+    1, 3, 4, 
+    2, 4, 5, 
+    4, 5, 6, 
+    1, 4, 7, 
     4, 6, 8,
     2, 5, 9,
     5, 10, 11,
     11, 12, 13
 
 }; // which indices of the points do you want to make as triangles?
+
+
+float dragonBodyVertices[] = {
+    580.0f, 493.0f, 0.0f, // 0 "dada" naga
+    503.0f, 488.0f, 0.0f, // 1 akhir leher naga (belakang leher)
+    535.0f, 574.0f, 0.0f, // 2 deket kaki depan, bagian depan
+
+    
+};
+
+unsigned int dragonBodyIndices[] = {
+    0, 1, 2
+};
 
 #endif
