@@ -4,7 +4,7 @@
 #define DRAGON_HEAD 0
 #define DRAGON_BODY 1
 #define DRAGON_WINGS 2
-#define DRAGON_LEGS 3
+#define DRAGON_TAIL 3
 
 /* Vertice Dict */
 // 0 1 2 = tanduk
@@ -61,5 +61,22 @@ float dragonBodyVertices[] = {
 unsigned int dragonBodyIndices[] = {
     0, 1, 2
 };
+
+float dragonWingsVertices = {
+
+};
+
+unsigned int dragonWingsIndices = {
+
+};
+
+float dragonTailVertices = {
+
+};
+
+unsigned int dragonTailIndices[] = {
+    
+};
+
 
 #endif
