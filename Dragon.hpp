@@ -60,6 +60,7 @@ float dragonBodyVertices[] = {
     404.0f, 573.0f, 0.0f, // 15 paha belakang naga, bagian depan
     319.0f, 617.0f, 0.0f, // 16 kaki naga belakang, belakang
     371.0f, 633.0f, 0.0f, // 17 kaki naga belakang, depan
+    296
 };
 
 unsigned int dragonBodyIndices[] = {
@@ -81,10 +82,46 @@ unsigned int dragonBodyIndices[] = {
 };
 
 float dragonWingsVertices[] = {
+    389.0f, 506.0f, 0.0f, // 0 punggung, kiri
+    470.0f, 510.0f, 0.0f, // 1 punggung, tengah, agak ke kanan
+    491.0f, 485.0f, 0.0f, // 2 punggung, kanan, agak atas
+    259.0f, 384.0f, 0.0f, // 3 antara segment 1 dan 2
+    514.0f, 260.0f, 0.0f, // 4 CONNECTOR POINT for all wing lines
+    360.0f, 385.0f, 0.0f, // 5 point 2 segment sayap 1 <kanan>
+    391.0f, 391.0f, 0.0f, // 6 outer segment sayap 1 <kanan dari 5>
+    148.0f, 310.0f, 0.0f, // 7 antara segment 2 dan 3
+    98.0f , 383.0f, 0.0f, // 8 ujung segment 2
+    31.0f , 265.0f, 0.0f, // 9 ujung segment 3
+    213.0f, 170.0f, 0.0f, // 10 antara segment 3 dan 4
+    160.0f, 40.0f , 0.0f, // 11 ujung segment 4
 
 };
 
 unsigned int dragonWingsIndices[] = {
+    // Segment 1 bagian bawah
+    0, 1, 3, 
+    1, 3, 5,
+    // end
+
+    3, 4, 5, // Segment 1 atas
+    4, 5, 6, // Segment atas, outer segment
+
+    // Outer segment, bawah
+    1, 2, 6,
+    1, 5, 6,
+    // end
+
+    // Segment 2
+    3, 4, 8,
+    4, 7, 8,
+    // end
+
+    // Segment 3
+    4, 7, 9,
+    4, 9, 10,
+    // end
+
+    4, 10, 11 // Segment 4
 
 };
 
