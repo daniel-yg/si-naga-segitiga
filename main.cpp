@@ -246,14 +246,14 @@ void render(array <GLuint, 4> &VAO) {
 void renderDragonHead(unsigned int &VAO) {
     glBindVertexArray(VAO);
     GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
-    glUniform4f(objectColorAddr, 0.0f, 1.0f, 1.0f, 1.0f);
+    glUniform4f(objectColorAddr, 0.0f, 0.9f, 0.9f, 1.0f);
     glDrawElements(GL_TRIANGLES,sizeof(dragonHeadIndices)/sizeof(int),GL_UNSIGNED_INT,0);
 }
 
 void renderDragonBody(unsigned int &VAO) {
     glBindVertexArray(VAO);
     GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
-    glUniform4f(objectColorAddr, 1.0f, 0.0f, 0.0f, 1.0f);
+    glUniform4f(objectColorAddr, 0.1020f, 0.7f, 0.7f, 1.0f);
     glDrawElements(GL_TRIANGLES,sizeof(dragonBodyIndices)/sizeof(int),GL_UNSIGNED_INT,0);
 }
 
