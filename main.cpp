@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "Dragon.hpp"
 
+#include <array>
 #include <iostream>
 using namespace std;
 
@@ -22,10 +23,11 @@ const char* vertexShaderSource =
 const char* fragmentShaderSource = 
 "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 objectColor;\n"
 "\n"
 "void main()\n"
 "{\n"
-"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"    FragColor = objectColor;\n"
 "}\n";
 
 unsigned int shaderProgram;
@@ -35,13 +37,14 @@ void compileShaders();
 
 // sets up the objects to draw
 // TODO: trim out the unrequired args (potentially such as VBO)
-void setup(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+void setup(array<GLuint, 4> &VAO, array<GLuint, 4> &VBO, array<GLuint, 4> &EBO);
 
 void setupDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+void setupDragonBody(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
 
-void render(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
-
-void renderDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+void render(array<GLuint, 4> &VAO);
+void renderDragonHead(unsigned int &VAO);
+void renderDragonBody(unsigned int &VAO);
 
 int main(void)
 {
@@ -70,26 +73,27 @@ int main(void)
     
     compileShaders();
 
-    unsigned int VAO;
-    unsigned int VBO;
-    unsigned int EBO;
+    array<GLuint, 4> VAO;
+    array<GLuint, 4> VBO;
+    array<GLuint, 4> EBO;
 
     setup(VAO,VBO,EBO);
     
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
-    /* Pass screen size to shader */
+    
+    /* Pass uniform variables to shaders */
     GLint screenSizeAddr = glGetUniformLocation(shaderProgram, "size");
     glUniform2f(screenSizeAddr, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
+    
+    
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-       
-        glDrawElements(GL_TRIANGLES,sizeof(dragonHeadIndices)/sizeof(int),GL_UNSIGNED_INT,0);
+
+        render(VAO);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -101,7 +105,8 @@ int main(void)
     printf("%s",glGetString(GL_VERSION));
     glfwTerminate();
     return 0;
-}
+} /* int main(void) */
+
 
 void compileShaders() {
      /* Create and Compile vertex shader */
@@ -146,21 +151,20 @@ void compileShaders() {
     glDeleteShader(fragmentShader);
 }
 
-void setup(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
+void setup(array<GLuint, 4> &VAO, array<GLuint, 4> &VBO, array<GLuint, 4> &EBO) {
 
     //Initialization
-    glGenVertexArrays(1, &VAO); 
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    glGenVertexArrays(4, &VAO[0]); 
+    glGenBuffers(4, &VBO[0]);
+    glGenBuffers(4, &EBO[0]);
 
     // Set up the objects here
     // NOTE: most likely need different VAO VBO and EBO for each object. 
     // Look for it later
-    setupDragonHead(VAO, VBO, EBO);
+    setupDragonHead(VAO[DRAGON_HEAD], VBO[DRAGON_HEAD], EBO[DRAGON_HEAD]);
+    setupDragonBody(VAO[DRAGON_BODY], VBO[DRAGON_BODY], EBO[DRAGON_BODY]);
 
-    // Setting Vertex Attributes
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
-    glEnableVertexAttribArray(0);
+    
 
     // Unbinding
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
@@ -177,4 +181,45 @@ void setupDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonHeadIndices), dragonHeadIndices, GL_STATIC_DRAW);
+
+    // Setting Vertex Attributes
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+    glEnableVertexAttribArray(0);
+
+    // glBindVertexArray(0);
+}
+
+void setupDragonBody(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dragonBodyVertices), dragonBodyVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonBodyIndices), dragonBodyIndices, GL_STATIC_DRAW);
+
+    // Setting Vertex Attributes
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+    glEnableVertexAttribArray(0);
+    // glBindVertexArray(0);
+}
+
+
+void render(array <GLuint, 4> &VAO) {
+    renderDragonHead(VAO[DRAGON_HEAD]);
+    renderDragonBody(VAO[DRAGON_BODY]);
+    
+}
+void renderDragonHead(unsigned int &VAO) {
+    glBindVertexArray(VAO);
+    GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
+    glUniform4f(objectColorAddr, 0.0f, 1.0f, 1.0f, 1.0f);
+    glDrawElements(GL_TRIANGLES,sizeof(dragonHeadIndices)/sizeof(int),GL_UNSIGNED_INT,0);
+}
+
+void renderDragonBody(unsigned int &VAO) {
+    glBindVertexArray(VAO);
+    GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
+    glUniform4f(objectColorAddr, 1.0f, 0.0f, 0.0f, 1.0f);
+    glDrawElements(GL_TRIANGLES,sizeof(dragonBodyIndices)/sizeof(int),GL_UNSIGNED_INT,0);
 }
