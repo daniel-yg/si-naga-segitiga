@@ -38,13 +38,17 @@ void compileShaders();
 // sets up the objects to draw
 // TODO: trim out the unrequired args (potentially such as VBO)
 void setup(array<GLuint, 4> &VAO, array<GLuint, 4> &VBO, array<GLuint, 4> &EBO);
-
 void setupDragonHead(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
 void setupDragonBody(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+void setupDragonWings(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
+void setupDragonTail(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO);
 
 void render(array<GLuint, 4> &VAO);
 void renderDragonHead(unsigned int &VAO);
 void renderDragonBody(unsigned int &VAO);
+void renderDragonWings(unsigned int &VAO);
+void renderDragonTail(unsigned int &VAO);
+
 
 int main(void)
 {
@@ -159,11 +163,10 @@ void setup(array<GLuint, 4> &VAO, array<GLuint, 4> &VBO, array<GLuint, 4> &EBO) 
     glGenBuffers(4, &EBO[0]);
 
     // Set up the objects here
-    // NOTE: most likely need different VAO VBO and EBO for each object. 
-    // Look for it later
     setupDragonHead(VAO[DRAGON_HEAD], VBO[DRAGON_HEAD], EBO[DRAGON_HEAD]);
     setupDragonBody(VAO[DRAGON_BODY], VBO[DRAGON_BODY], EBO[DRAGON_BODY]);
-
+    setupDragonWings(VAO[DRAGON_WINGS], VBO[DRAGON_WINGS], EBO[DRAGON_WINGS]);
+    setupDragonTail(VAO[DRAGON_TAIL], VBO[DRAGON_TAIL], EBO[DRAGON_TAIL]);
     
 
     // Unbinding
@@ -204,10 +207,40 @@ void setupDragonBody(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
     // glBindVertexArray(0);
 }
 
+void setupDragonWings(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dragonWingsVertices), dragonWingsVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonWingsIndices), dragonWingsIndices, GL_STATIC_DRAW);
+
+    // Setting Vertex Attributes
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+    glEnableVertexAttribArray(0);
+}
+
+void setupDragonTail(unsigned int &VAO, unsigned int &VBO, unsigned int &EBO) {
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(dragonTailVertices), dragonTailVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(dragonTailIndices), dragonTailIndices, GL_STATIC_DRAW);
+
+    // Setting Vertex Attributes
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+    glEnableVertexAttribArray(0);
+}
+
 
 void render(array <GLuint, 4> &VAO) {
     renderDragonHead(VAO[DRAGON_HEAD]);
     renderDragonBody(VAO[DRAGON_BODY]);
+    renderDragonWings(VAO[DRAGON_WINGS]);
+    renderDragonTail(VAO[DRAGON_TAIL]);
     
 }
 void renderDragonHead(unsigned int &VAO) {
@@ -222,4 +255,18 @@ void renderDragonBody(unsigned int &VAO) {
     GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
     glUniform4f(objectColorAddr, 1.0f, 0.0f, 0.0f, 1.0f);
     glDrawElements(GL_TRIANGLES,sizeof(dragonBodyIndices)/sizeof(int),GL_UNSIGNED_INT,0);
+}
+
+void renderDragonWings(unsigned int &VAO) {
+    glBindVertexArray(VAO);
+    GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
+    glUniform4f(objectColorAddr, 1.0f, 0.0f, 0.0f, 1.0f);
+    glDrawElements(GL_TRIANGLES,sizeof(dragonWingsIndices)/sizeof(int),GL_UNSIGNED_INT,0);
+}
+
+void renderDragonTail(unsigned int &VAO) {
+    glBindVertexArray(VAO);
+    GLint objectColorAddr = glGetUniformLocation(shaderProgram, "objectColor");
+    glUniform4f(objectColorAddr, 1.0f, 0.0f, 0.0f, 1.0f);
+    glDrawElements(GL_TRIANGLES,sizeof(dragonTailIndices)/sizeof(int),GL_UNSIGNED_INT,0);
 }
